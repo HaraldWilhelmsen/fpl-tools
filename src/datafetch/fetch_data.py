@@ -34,7 +34,6 @@ class DataFetch:
     def get_saved_fpl_info(self) -> dict:
         with open(self.local_path) as json_data:
             fpl_data = json.load(json_data)
-        print(type(fpl_data))
         return fpl_data
     
     def get_current_fpl_info(self) -> dict:
