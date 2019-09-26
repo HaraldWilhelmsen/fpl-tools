@@ -13,26 +13,23 @@ class DataFetch:
         self.investigate_path()
 
     def investigate_path(self):
-        main_file = __main__.__file__
-
-        if main_file == 'fetch_data.py':
-            self.global_path = self.local_path
+        path = os.path.dirname(os.path.abspath(__file__))
         
-        elif main_file == 'main.py':
-            self.global_path = 'data-fetch/' + self.local_path
-
-        else:
+        if not path.split('/')[-1] == "datafetch":
             print('cannot determine path')
             exit(1)
+        
+        self.global_path = path + '/' + self.local_path
+
 
     def save_fpl_info(self) -> None:
         r = requests.get(self.web_page)
         jsonResponse = r.json()
-        with open(self.local_path, 'w') as outfile:
+        with open(self.global_path, 'w') as outfile:
             json.dump(jsonResponse, outfile)
         
     def get_saved_fpl_info(self) -> dict:
-        with open(self.local_path) as json_data:
+        with open(self.global_path) as json_data:
             fpl_data = json.load(json_data)
         return fpl_data
     
@@ -44,6 +41,6 @@ class DataFetch:
 
 if __name__ == '__main__':
     a = DataFetch()
-    #a.save_fpl_info()
-    #b = a.get_saved_fpl_info()
-    #print(b)
+    a.save_fpl_info()
+    b = a.get_saved_fpl_info()
+    print(b)
