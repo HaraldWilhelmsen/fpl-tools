@@ -14,18 +14,14 @@ class DataFetch:
         self.investigate_path()
 
     def investigate_path(self):
-        main_file = __main__.__file__
-        main_file = main_file.split('/')[-1]
-
-        if main_file == 'fetch_data.py':
-            self.global_path = self.local_path
+        path = os.path.dirname(os.path.abspath(__file__))
         
-        elif main_file == 'main.py':
-            self.global_path = 'datafetch/' + self.local_path
-
-        else:
+        if not path.split('/')[-1] == "datafetch":
             print('cannot determine path')
             exit(1)
+        
+        self.global_path = path + '/' + self.local_path
+
 
     def save_fpl_info(self) -> None:
         r = requests.get(self.web_page)
@@ -51,6 +47,6 @@ class DataFetch:
 
 if __name__ == '__main__':
     a = DataFetch()
-    # a.save_fpl_info()
+    a.save_fpl_info()
     b = a.get_saved_fpl_info()
     print(b)
