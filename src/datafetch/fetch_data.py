@@ -8,6 +8,7 @@ import os
 class DataFetch:
     def __init__(self) -> None:
         self.web_page = 'https://fantasy.premierleague.com/api/bootstrap-static/'
+        self.web_page_fixtures = 'https://fantasy.premierleague.com/api/fixtures/'
         self.local_path = 'fpl.json'
         self.global_path = ''
         self.investigate_path()
@@ -39,6 +40,11 @@ class DataFetch:
     
     def get_current_fpl_info(self) -> dict:
         r = requests.get(self.web_page)
+        jsonResponse = r.json()
+        return jsonResponse
+
+    def get_current_fixtures(self) -> dict:
+        r = requests.get(self.web_page_fixtures)
         jsonResponse = r.json()
         return jsonResponse
 

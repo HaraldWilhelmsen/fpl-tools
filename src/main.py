@@ -1,7 +1,4 @@
-from datafetch.fetch_data import DataFetch
-from dataformat.classes import Players
-
-import matplotlib.pyplot as plt
+import fpl_functions as fpl_funcs
 
 master_flag = {
             -1: 'test space',
@@ -9,17 +6,18 @@ master_flag = {
 
 if __name__ == '__main__':
     if master_flag == 'test space':
-        a = DataFetch()
-        b = a.get_saved_fpl_info()
-        player_info = b['elements']
-        selected_players_info = player_info[:]
-        players = Players(selected_players_info)
-        prices = players.get_attribute_from_all_players('price').values
-        points = players.get_attribute_from_all_players('total_points').values
-        df = players.players_df
-        print(df.head())
-        # print(df)
-        print(df.sort_values('selection', ascending=False).head())
-        team_list = players.create_all_teams()
+        team_list = fpl_funcs.create_team_list()
+
         Arsenal = team_list[0]
+        print(Arsenal.name)
+        print('Players with most points..')
         print(Arsenal.players_df.sort_values('total_points', ascending=False).head())
+        print('First five fixtures..')
+        print(Arsenal.fixtures_df.head())
+
+        Wolves = team_list[-1]
+        print(Wolves.name)
+        print('Players with most points..')
+        print(Wolves.players_df.sort_values('total_points', ascending=False).head())
+        print('First five fixtures..')
+        print(Wolves.fixtures_df.head())
