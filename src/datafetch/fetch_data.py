@@ -1,5 +1,4 @@
 """Class used to read data from 'fantasy.premierleague.com', and return or save it """
-import __main__
 import json
 import requests
 import os
@@ -21,7 +20,6 @@ class DataFetch:
             exit(1)
         
         self.global_path = path + '/' + self.local_path
-
 
     def save_fpl_info(self) -> None:
         r = requests.get(self.web_page)
