@@ -1,5 +1,4 @@
 """Class used to read data from 'fantasy.premierleague.com', and return or save it """
-import __main__
 import json
 import requests
 import os
@@ -8,8 +7,9 @@ import os
 class DataFetch:
     def __init__(self) -> None:
         self.web_page = 'https://fantasy.premierleague.com/api/bootstrap-static/'
+        self.web_page_fixtures = 'https://fantasy.premierleague.com/api/fixtures/'
         self.local_path = 'fpl.json'
-
+        self.global_path = ''
         self.investigate_path()
 
     def investigate_path(self):
@@ -20,7 +20,6 @@ class DataFetch:
             exit(1)
         
         self.global_path = path + '/' + self.local_path
-
 
     def save_fpl_info(self) -> None:
         r = requests.get(self.web_page)
@@ -35,6 +34,11 @@ class DataFetch:
     
     def get_current_fpl_info(self) -> dict:
         r = requests.get(self.web_page)
+        jsonResponse = r.json()
+        return jsonResponse
+
+    def get_current_fixtures(self) -> dict:
+        r = requests.get(self.web_page_fixtures)
         jsonResponse = r.json()
         return jsonResponse
 
