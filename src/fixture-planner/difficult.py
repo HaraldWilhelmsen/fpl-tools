@@ -4,11 +4,8 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 from matplotlib import colors
 
-<<<<<<< HEAD
-def createDataFrame(txt):
-=======
+
 def create_data_frame(txt):
->>>>>>> 593499e30d3734d758e7ed84e2f7b4a4685def4d
     data = pd.read_csv(txt)
     for i in range(1,data.shape[1]):
         for j in range(data.shape[0]):
@@ -16,14 +13,10 @@ def create_data_frame(txt):
             data[num][j] = data[num][j].split(" ")
     return pd.DataFrame(data = data)
 	
-<<<<<<< HEAD
-df = createDataFrame("fixture_data/difficulty.csv")
 
 # one functon where all teams are evaluted and one where you specify
 # which teams to check
-=======
 df = create_data_frame("fixture_data/difficulty.csv")
->>>>>>> 593499e30d3734d758e7ed84e2f7b4a4685def4d
 
 def fixture_score_one_team(df, team_idx, GW_start, GW_end):
     score = 0
@@ -56,8 +49,7 @@ def best_games_future(df, GW_start, GW_end, best_teams):
     print("\n Best %i teams with fixtures from GW %i to %i" %(best_teams, GW_start, GW_end))
     for i in range(best_teams):
         print(all_teams[i])
-<<<<<<< HEAD
-    
+
 def sort_teams_based_on_fixtures(A):
     for i in range(A.size - 1):
         fixture_score = A[i + 1][0]
@@ -70,8 +62,6 @@ def sort_teams_based_on_fixtures(A):
 
 #best_games_future(df, 1, 3, 3)
 
-=======
-    return all_teams
 
 def insertionsort(A):
     # sort an array according to its fixture score
@@ -153,5 +143,4 @@ def visualize_fixtures(df, GW_start, GW_end):
 
 #visualize_one_teams_fixtures(df, 3, 6, 'AVL')
 #visualize_fixtures(df, 1,5)
->>>>>>> 593499e30d3734d758e7ed84e2f7b4a4685def4d
 
