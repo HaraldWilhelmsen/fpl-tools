@@ -24,3 +24,27 @@ def team_number_to_name(team_number):
                                  19: 'West Ham',
                                  20: 'Wolverhampton Wanderers'}
     return number_to_name_dictionary[team_number]
+
+def team_number_to_short_name(team_number):
+    number_to_name_dictionary = {1: 'ARS',
+                                 2: 'AVL',
+                                 3: 'BOU',
+                                 4: 'BHA',
+                                 5: 'BUR',
+                                 6: 'CHE',
+                                 7: 'CRY',
+                                 8: 'EVE',
+                                 9: 'LEI',
+                                 10: 'LIV',
+                                 11: 'MCI',
+                                 12: 'MUN',
+                                 13: 'NEW',
+                                 14: 'NOR',
+                                 15: 'SHU',
+                                 16: 'SOU',
+                                 17: 'TOT',
+                                 18: 'WAT',
+                                 19: 'WHU',
+                                 20: 'WOL'}
+    return number_to_name_dictionary[team_number]
+
