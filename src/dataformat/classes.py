@@ -65,7 +65,8 @@ class Players:
         :param fixtures_information: list of dictionaries with fixture information
         """
         df = pd.DataFrame(information_players)
-        float_columns = ['form', 'points_per_game', 'selected_by_percent']  # ensure float from strings
+        float_columns = ['form', 'points_per_game', 'selected_by_percent', 'ict_index', 'influence',
+                         'creativity', 'threat']  # ensure float from strings
         df[float_columns] = df[float_columns].astype(float)
         length_news = df['news'].str.len()
         df.loc[:, 'fitness'] = length_news.values == 0  # create boolean for fitness/available players
@@ -74,7 +75,8 @@ class Players:
         df = df.rename(columns=new_names)
         # decide attributes to keep
         attributes_to_use = ['name', 'price', 'team', 'total_points', 'points_per_game', 'minutes', 'form',
-                             'clean_sheets', 'assists', 'goals_scored', 'selection', 'position', 'fitness']
+                             'clean_sheets', 'assists', 'goals_scored', 'selection', 'position', 'fitness',
+                             'ict_index', 'influence', 'creativity', 'threat']
         self.df = df[attributes_to_use]
         self.fixtures = Fixtures(fixtures_information)
 
@@ -92,9 +94,19 @@ class Players:
             team_list.append(team)
         return team_list
 
+    def create_squad(self, list_of_player_names, list_of_player_teams):
+        if len(list_of_player_names) != 15:
+            print('Not enough players..')
+            exit(1)
+        df = pd.DataFrame()
+        for i in range(len(list_of_player_names)):
+            player_name, team_number = list_of_player_names[i], list_of_player_teams[i]
+            player_df = self.df.loc[(self.df['name'] == player_name) & (self.df['team'] == team_number)].copy()
+            df = df.append(player_df)
+        return df
+
 
 class Squad:
-    # TODO: this has not been tested and is not ready for use... Yet!
     """
         Class of a selected squad with 15 players to be used in FPL
     """
@@ -109,17 +121,30 @@ class Squad:
         self.number_of_defenders = 5
         self.number_of_midfielders = 5
         self.number_of_attackers = 3
+        self.selection_gk = 1
+        self.selection_def_min = 3
+        self.selection_def_max = 5
+        self.selection_mid_min = 3
+        self.selection_mid_max = 5
+        self.selection_att_min = 1
+        self.selection_att_min = 3
         self.positions_sum = self.number_of_goalkeepers*1 + self.number_of_defenders*2 + \
                              self.number_of_midfielders*3 + self.number_of_attackers*4
+        if not self.validate_squad():
+            print('Given squad does not meet the fpl criteria')
+            exit(1)
 
     def validate_squad(self):
+        player_amount = len(self.players_df) == 15
         prices = self.players_df['price'].values
         positions = self.players_df['position'].values
+        teams = self.players_df['team'].value_counts()
         total_cost_squad = np.sum(prices)
         below_check = total_cost_squad <= self.max_price
         sum_of_positions = np.sum(positions)
         position_check = sum_of_positions == self.positions_sum
-        if below_check*position_check == 1:
+        players_from_team_check = teams.max() <= 3
+        if below_check*position_check*players_from_team_check*player_amount == 1:
             return True
         else:
             return False
