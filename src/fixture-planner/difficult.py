@@ -1,19 +1,31 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import matplotlib.cm as cm
 from matplotlib import colors
+import fpl_functions as fpl_funcs
+import utility_functions as utl_funcs
 
-def create_data_frame(txt):
-    data = pd.read_csv(txt)
-    for i in range(1,data.shape[1]):
-        for j in range(data.shape[0]):
-            num = str(i)
-            data[num][j] = data[num][j].split(" ")
-
-    return pd.DataFrame(data = data)
-	
-df = create_data_frame("fixture_data/difficulty.csv")
+def create_data_frame():
+    team_list = fpl_funcs.create_team_list()
+    columns = [str(i) for i in range(0, len(team_list[0].fixtures_df.index) + 1)]
+    columns[0] = 'Team'
+    data = []
+    temp_team = []
+    for team in range(20):
+        temp_team.append(team_list[team].name)
+    for gameweek in range(20):
+        team_info = team_list[gameweek]
+        temp_data = [team_info.name]
+        for team_idx in range(len(columns)-1):
+            index_opp = team_info.fixtures_df['opponent_team'].index[team_idx]
+            index_ah = team_info.fixtures_df['H/A'].index[team_idx]
+            index_diff = team_info.fixtures_df['difficulty'].index[team_idx]
+            opp = team_info.fixtures_df['opponent_team'][index_opp]
+            ah = team_info.fixtures_df['H/A'][index_ah]
+            diff = team_info.fixtures_df['difficulty'][index_diff]
+            temp_data.append([utl_funcs.team_number_to_short_name(opp), ah, diff])
+        data.append(temp_data)
+    return pd.DataFrame(data=data, columns=columns)
 
 def fixture_score_one_team(df, team_idx, GW_start, GW_end):
     score = 0
@@ -29,25 +41,6 @@ def fixture_score_one_team(df, team_idx, GW_start, GW_end):
         upcoming_fixtures_score[i - GW_start + 1] = int(df.loc[team_idx][1:][i][2])
     return np.array([score, team, upcoming_fixtures, upcoming_fixtures_score])
 
-def best_games_future(df, GW_start, GW_end, best_teams):
-    number_of_teams = df.shape[0]
-    print("number of teams: ", number_of_teams)
-    print("from gameweek %i to %i " %(GW_start, GW_end))
-    print("Score: Team: Fixtures: ")
-    # create an array with size of all teams, which will be sorted by score
-    all_teams = np.empty(number_of_teams, dtype = object)
-    for teams in range(0, number_of_teams):
-        team = fixture_score_one_team(df, teams, GW_start, GW_end)
-        print(team[0], " ", team[1], " ", team[2])
-        # maybe create a dataframe with score team and fixtures
-        all_teams[teams] = team
-    # sort the list according to the score
-    all_teams = insertionsort(all_teams)
-    print("\n Best %i teams with fixtures from GW %i to %i" %(best_teams, GW_start, GW_end))
-    for i in range(best_teams):
-        print(all_teams[i])
-    return all_teams
-
 def insertionsort(A):
     # sort an array according to its fixture score
     for i in range(A.size - 1):
@@ -59,33 +52,51 @@ def insertionsort(A):
         A[i + 1] = team_array
     return A
 
-#best_games_future(df, 1, 3, 3)
-# add difficult value and fixture together ars 5, new 4
+def best_games_future(df, GW_start, GW_end):
+    number_of_teams = df.shape[0]
+    # create an array with size of all teams, which will be sorted by score
+    all_teams = np.empty(number_of_teams, dtype = object)
+    for teams in range(0, number_of_teams):
+        team = fixture_score_one_team(df, teams, GW_start, GW_end)
+        all_teams[teams] = team
+    # sort the list according to the score
+    all_teams = insertionsort(all_teams)
+    return all_teams
 
-def visualize_one_teams_fixtures(df, GW_start, GW_end, team):
-    team_index = df.loc[df['Team']=='AVL'].index[0]
+def compute_best_fixtures_one_team(df, GW_start, GW_end, team_idx, min_length):
+    max_score = fixture_score_one_team(df, team_idx, GW_start, GW_end)[0] / (GW_end - GW_start)
+    max_info = fixture_score_one_team(df, team_idx, GW_start, GW_end)
+    for i in range(GW_start, GW_end):
+        for j in range(i + 1, GW_end + 1):
+            temp_score = fixture_score_one_team(df, team_idx, i, j)[0] / (j - i + 1)
+            if temp_score <= max_score and (j - i + 1) >= min_length:
+                if temp_score == max_score and len(fixture_score_one_team(df, team_idx, i, j)[2]) > len(max_info[2]):
+                    max_info = fixture_score_one_team(df, team_idx, i, j)
+                    max_score = temp_score
+                if temp_score != max_score:
+                    max_info = fixture_score_one_team(df, team_idx, i, j)
+                    max_score = temp_score
+    return max_info
+
+def visualize_one_teams_fixtures(df, GW_start, GW_end, team_index):
     info = fixture_score_one_team(df, team_index, GW_start, GW_end)
     diff = info[3]
     # info should be a list of objects 
     x_len, y_len = GW_end-GW_start+1, 1
     fig, ax = plt.subplots(1,1)
-    
     # add x-axis 
     gameweeks = np.empty([x_len], dtype=object)
     for j, i in enumerate(np.arange(GW_start, GW_end + 1)):
         gameweeks[j] = 'GW' + ' ' + str(i)
-      
-    
     # plot values for each pixel
     for j in range(x_len):
             text = ax.text(j, 0, info[2][j], ha="center", va="center", color="black")
-
     cmap = colors.ListedColormap(["lime", "forestgreen", "lightgrey", "lightcoral", "red"])
     img = plt.imshow([diff], cmap=cmap)
     ax.set_xticks(np.arange(x_len))
     ax.set_xticklabels(gameweeks)
     ax.set_yticks(np.arange(y_len))
-    ax.set_yticklabels(np.array([team], dtype=object))
+    ax.set_yticklabels(np.array([utl_funcs.team_number_to_name(team_index)], dtype=object))
     fig.tight_layout()
     ax.set_title("Fixture plan from GW %i to GW %i" %(GW_start, GW_end))
     plt.show()
@@ -101,31 +112,29 @@ def visualize_fixtures(df, GW_start, GW_end):
     fig, ax = plt.subplots(1,1)
     
     # add x-axis
-    
     gameweeks = np.empty([x_len], dtype=object)
     for j, i in enumerate(np.arange(GW_start, GW_end + 1)):
         gameweeks[j] = 'GW' + ' ' + str(i)
-    
+        gameweeks[j] = str(i)
+
     # add y-axis
     team = np.empty([y_len+1], dtype=object)
     for i in range(y_len):
         team[i+1] = info[i][1]
-   
+
     # plot values for each pixel
     for i in range(y_len):
         for j in range(x_len):
             text = ax.text(j, i, info[i][2][j], ha="center", va="center", color="black")
 
     cmap = colors.ListedColormap(["lime", "forestgreen", "lightgrey", "lightcoral", "red"])
-    img = plt.imshow(np.array(diff), cmap=cmap)
+    plt.imshow(np.array(diff), cmap=cmap)
     ax.set_xticks(np.arange(x_len))
     ax.set_xticklabels(gameweeks)
-    #ax.set_yticks(np.arange(y_len))
-    ax.set_yticklabels(team)
+    ax.set_yticks(np.arange(y_len))
+    ax.set_yticklabels(team[1:])
+    ax.set_ylim(-0.5, y_len - 0.5)
     fig.tight_layout()
     ax.set_title("Fixture plan from GW %i to GW %i" %(GW_start, GW_end))
     plt.show()
-
-#visualize_one_teams_fixtures(df, 3, 6, 'AVL')
-#visualize_fixtures(df, 1,5)
 
