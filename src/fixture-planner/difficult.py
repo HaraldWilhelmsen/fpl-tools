@@ -140,3 +140,4 @@ def visualize_fixtures(df, GW_start, GW_end):
     ax.set_title("Fixture plan from GW %i to GW %i" %(GW_start, GW_end))
     plt.show()
 
+
