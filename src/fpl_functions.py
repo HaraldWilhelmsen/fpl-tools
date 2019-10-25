@@ -65,4 +65,5 @@ def get_gameweek_data(gameweek_number):
     float_columns = ['ict_index', 'influence', 'creativity', 'threat']
     df[float_columns] = df[float_columns].astype(float)
     df.loc[:, 'id'] = ids.values
+    df = df.sort_values('id', ascending=True)
     return df

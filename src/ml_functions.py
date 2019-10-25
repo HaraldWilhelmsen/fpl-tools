@@ -6,6 +6,8 @@ import utility_functions as util_funcs
 
 
 def get_all_gameweeks(latest_gameweek):
+    # TODO: change to a bigger df with all gameweeks information to easier make statistics based on previous gameweeks
+    # TODO: only need to get position once
     list_of_gameweek_dfs = []
     for i in range(1, latest_gameweek+1):
         list_of_gameweek_dfs.append(fpl_funcs.get_gameweek_data(i))
@@ -19,6 +21,7 @@ def update_gameweek_with_position_and_fixture_information(gw_dfs, fixtures):
         gw.loc[:, 'opponent_difficulty'] = 0
         gw.loc[:, 'H/A'] = 0
         ids = gw['id'].values
+        # print(ids)
         for id in ids:
             position = util_funcs.get_position_from_player_id(id)
             gw.loc[gw['id'] == id, 'position'] = position
@@ -29,10 +32,18 @@ def update_gameweek_with_position_and_fixture_information(gw_dfs, fixtures):
                 gw.loc[gw['id'] == id, 'H/A'] = 1
 
 
+def create_expected_statistics(gw_dfs):
+    max_ids = gw_dfs[0]['id'].max()
+    for i in range(4, len(gw_dfs)):
+        gw = gw_dfs[i]
+        # TODO: use the previous 4 gameweek to compute xG, xA, xCS, xICT
+
+
 if __name__ == "__main__":
     all_fixtures = fpl_funcs.get_fixtures()
     gw_dfs = get_all_gameweeks(5)
     update_gameweek_with_position_and_fixture_information(gw_dfs, all_fixtures)
+    # create_expected_statistics(gw_dfs)
     gw_1 = gw_dfs[0]
     gw_5 = gw_dfs[4]
     print(gw_1.head())
