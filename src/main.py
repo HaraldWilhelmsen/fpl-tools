@@ -6,7 +6,8 @@ master_flag = {
             0: 'create teams',
             1: 'create squad',
             2: 'choose squad',
-        }[2]
+            3: 'gameweek data',
+        }[0]
 
 if __name__ == '__main__':
     if master_flag == 'test space':
@@ -38,5 +39,8 @@ if __name__ == '__main__':
         print(example_squad.players_df)
 
     elif master_flag == 'choose squad':
-        choice_attribute = 'form'
+        choice_attribute = 'total_points'
         fpl_funcs.choose_squad_based_on_attribute(choice_attribute)
+
+    elif master_flag == 'gameweek data':
+        fpl_funcs.get_gameweek_data(1)
