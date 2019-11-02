@@ -50,11 +50,27 @@ def create_player_id_to_position(players):
         pickle.dump(dictionary, handle)
 
 
+def create_player_id_to_name(players):
+    ids = players.df['id']
+    names = players.df['name']
+    dictionary = dict(zip(ids, names))
+    # Save dictionary as player_ids_to_team as a pickle
+    with open('player_ids_to_name.pickle', 'wb') as handle:
+        pickle.dump(dictionary, handle)
+
+
 def get_position_from_player_id(player_id):
     # Load dictionary with player id -> position
     with open('player_ids_to_position.pickle', 'rb') as handle:
         player_ids_to_position_dict = pickle.load(handle)
     return player_ids_to_position_dict[player_id]
+
+
+def get_name_from_player_id(player_id):
+    # Load dictionary with player id -> position
+    with open('player_ids_to_name.pickle', 'rb') as handle:
+        player_ids_to_name_dict = pickle.load(handle)
+    return player_ids_to_name_dict[player_id]
 
 
 def get_gameweek_information(player_id, gameweek, fixtures):
