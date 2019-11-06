@@ -27,6 +27,30 @@ def team_number_to_name(team_number):
     return number_to_name_dictionary[team_number]
 
 
+def team_number_to_short_name(team_number):
+    number_to_name_dictionary = {1: 'ARS',
+                                 2: 'AVL',
+                                 3: 'BOU',
+                                 4: 'BHA',
+                                 5: 'BUR',
+                                 6: 'CHE',
+                                 7: 'CRY',
+                                 8: 'EVE',
+                                 9: 'LEI',
+                                 10: 'LIV',
+                                 11: 'MCI',
+                                 12: 'MUN',
+                                 13: 'NEW',
+                                 14: 'NOR',
+                                 15: 'SHU',
+                                 16: 'SOU',
+                                 17: 'TOT',
+                                 18: 'WAT',
+                                 19: 'WHU',
+                                 20: 'WOL'}
+    return number_to_name_dictionary[team_number]
+
+
 def create_player_id_to_team(players):
     """
         Use Players object to create a dictionary for matching players ids with a team. Is going to be used
@@ -81,5 +105,3 @@ def get_gameweek_information(player_id, gameweek, fixtures):
     team_fixtures = fixtures.list_teams[team-1]  # 0-indexed list
     gameweek_info = team_fixtures[team_fixtures['gameweek'] == gameweek]
     return gameweek_info
-
-
