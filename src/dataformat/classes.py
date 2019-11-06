@@ -74,7 +74,7 @@ class Players:
                      'element_type': 'position'}  # new and better names for columns
         df = df.rename(columns=new_names)
         # decide attributes to keep
-        attributes_to_use = ['name', 'price', 'team', 'total_points', 'points_per_game', 'minutes', 'form',
+        attributes_to_use = ['name', 'id', 'price', 'team', 'total_points', 'points_per_game', 'minutes', 'form',
                              'clean_sheets', 'assists', 'goals_scored', 'selection', 'position', 'fitness',
                              'ict_index', 'influence', 'creativity', 'threat']
         self.df = df[attributes_to_use]
@@ -132,7 +132,6 @@ class Squad:
                              self.number_of_midfielders*3 + self.number_of_attackers*4
         if not self.validate_squad():
             print('Given squad does not meet the fpl criteria')
-            exit(1)
 
     def validate_squad(self):
         player_amount = len(self.players_df) == 15
